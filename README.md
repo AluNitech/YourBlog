@@ -1,7 +1,7 @@
 # Astro + Decap CMS を使ったシンプルなブログ
-<img width="1919" height="952" alt="スクリーンショット 2025-11-06 171649" src="https://github.com/user-attachments/assets/0899e3ca-6d1e-4641-a7a5-3ed1333d29c1" />
+<img width="1200" alt="スクリーンショット 2025-11-06 171649" src="https://github.com/user-attachments/assets/0899e3ca-6d1e-4641-a7a5-3ed1333d29c1" />
 ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-<img width="1916" height="1199" alt="スクリーンショット 2025-11-06 171857" src="https://github.com/user-attachments/assets/125d0469-2f86-4698-b0ef-ac868ed46367" />
+<img width="1200" alt="スクリーンショット 2025-11-06 171857" src="https://github.com/user-attachments/assets/125d0469-2f86-4698-b0ef-ac868ed46367" />
 
 
 
