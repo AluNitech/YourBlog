@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { isDraft, sortByPublishDateDesc } from '../../utils/posts';
+import type { BlogEntry } from '../../utils/posts';
+
+const posts: BlogEntry[] = sortByPublishDateDesc(
+  ((await getCollection('blog')) as BlogEntry[]).filter((entry: BlogEntry) => !isDraft(entry)),
+);
+---
+
+<Layout
+  title="Blog"
+  description="All YourBlog articles sorted by latest publish date."
+>
+  <h1>Blog</h1>
+  {posts.length ? (
+    <div class="post-grid">
+      {posts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  ) : (
+    <p>No published entries yet.</p>
+  )}
+</Layout>

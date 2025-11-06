@@ -1,0 +1,41 @@
+---
+import SmartImage from './SmartImage.astro';
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../utils/formatDate';
+import { getPostPermalink } from '../utils/posts';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props as Props;
+const { data } = post;
+const href = getPostPermalink(post);
+const tags: string[] = data.tags ?? [];
+const primaryTag = tags[0];
+---
+
+<article class="post-card">
+  <a class={`post-card__cover${data.coverImage ? '' : ' post-card__cover--empty'}`} href={href} aria-label={`${data.title} cover`}>
+    {data.coverImage ? (
+      <SmartImage
+        src={data.coverImage}
+        alt={data.title}
+        widths={[320, 480, 640, 768, 1024]}
+        sizes="(min-width: 1200px) 25vw, (min-width: 768px) 33vw, 100vw"
+      />
+    ) : (
+      <span class="post-card__cover-placeholder" aria-hidden="true">No Image</span>
+    )}
+  </a>
+  <div class="post-card__body">
+    {primaryTag ? <p class="post-card__section">{primaryTag}</p> : null}
+    <h3 class="post-card__title">
+      <a href={href}>{data.title}</a>
+    </h3>
+    {data.description ? <p class="post-card__description">{data.description}</p> : null}
+    <p class="post-card__meta">
+      <time datetime={data.publishDate.toISOString()}>{formatDate(data.publishDate)}</time>
+    </p>
+  </div>
+</article>

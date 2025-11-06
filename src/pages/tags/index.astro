@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Tag from '../../components/Tag.astro';
+import { groupTags, isDraft } from '../../utils/posts';
+import type { BlogEntry } from '../../utils/posts';
+
+const tags = Array.from(
+  groupTags(
+    ((await getCollection('blog')) as BlogEntry[]).filter((entry: BlogEntry) => !isDraft(entry)),
+  ).entries(),
+).sort(([a], [b]) => a.localeCompare(b));
+---
+
+<Layout
+  title="Tags"
+  description="Browse YourBlog posts grouped by tag."
+>
+  <h1>Tags</h1>
+  {tags.length ? (
+    <ul>
+      {tags.map(([tag, posts]) => (
+        <li>
+          <Tag tag={tag} /> — {posts.length} post{posts.length === 1 ? '' : 's'}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>No tags yet.</p>
+  )}
+</Layout>

@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { groupTags, isDraft } from '../../utils/posts';
+import type { BlogEntry } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('blog')) as BlogEntry[];
+  const tagMap = groupTags(entries.filter((entry) => !isDraft(entry)));
+
+  return Array.from(tagMap.entries()).map(([label, posts]) => ({
+    params: { tag: label.toLowerCase() },
+    props: { displayTag: label, posts },
+  }));
+}
+
+interface Props {
+  displayTag: string;
+  posts: BlogEntry[];
+}
+
+const { displayTag, posts } = Astro.props as Props;
+---
+
+<Layout title={`${displayTag} · Tags`} description={`Posts tagged with ${displayTag}.`}>
+  <h1>#{displayTag}</h1>
+  <p>{posts.length} post{posts.length === 1 ? '' : 's'} with this tag.</p>
+  <div class="post-grid">
+    {posts.map((post) => (
+      <PostCard post={post} />
+    ))}
+  </div>
+</Layout>

@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	ogImage?: string;
+	ogType?: 'website' | 'article';
+	canonical?: string;
+	noIndex?: boolean;
+}
+
+const siteName = 'YourBlog';
+const defaultDescription = 'YourBlog sharing notes and links about the web.';
+
+const { title, description, ogImage, ogType, canonical, noIndex } = Astro.props as Props;
+
+const pageTitle = title ?? siteName;
+const metaDescription = description ?? defaultDescription;
+
+const siteOrigin = Astro.site ? Astro.site.origin : undefined;
+const fallbackOrigin = !siteOrigin && Astro.url ? Astro.url.origin : undefined;
+
+const resolveUrl = (value?: string) => {
+	if (!value) {
+		return undefined;
+	}
+
+	try {
+		if (value.startsWith('http://') || value.startsWith('https://')) {
+			return value;
+		}
+
+		const origin = siteOrigin || fallbackOrigin;
+
+		if (origin) {
+			return new URL(value, `${origin}/`).href;
+		}
+
+		return Astro.url ? new URL(value, Astro.url).href : value;
+	} catch {
+		return value;
+	}
+};
+
+const canonicalUrl = canonical ? resolveUrl(canonical) : Astro.url?.href;
+const ogImageUrl = resolveUrl(ogImage);
+const twitterCard = ogImageUrl ? 'summary_large_image' : 'summary';
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={metaDescription} />
+		{noIndex ? <meta name="robots" content="noindex" /> : null}
+		{canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
+		<title>{pageTitle}</title>
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:type" content={ogType ?? 'website'} />
+		<meta property="og:description" content={metaDescription} />
+		{canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
+		{ogImageUrl ? <meta property="og:image" content={ogImageUrl} /> : null}
+		{ogImageUrl ? <meta property="og:image:alt" content={pageTitle} /> : null}
+		<meta name="twitter:card" content={twitterCard} />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={metaDescription} />
+		{ogImageUrl ? <meta name="twitter:image" content={ogImageUrl} /> : null}
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="site-header__inner">
+				<a class="site-header__home" href="/">
+					<strong class="site-header__title">YourBlog</strong>
+				</a>
+				<nav class="site-header__nav" aria-label="Main navigation">
+					<a href="/blog/">Posts</a>
+					<a href="/tags/">Tags</a>
+				</nav>
+			</div>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<div class="site-footer__inner">
+				<div class="site-footer__meta">
+					<strong class="site-footer__brand">YourBlog</strong>
+					<p>Sharing thoughts and notes on the web.</p>
+				</div>
+				<div class="site-footer__links">
+					<a href="/blog/">Posts</a>
+					<a href="/tags/">Tags</a>
+					<a href="/admin/">Admin</a>
+				</div>
+				<p class="site-footer__copyright">© {currentYear} YourBlog. All rights reserved.</p>
+			</div>
+		</footer>
+	</body>
+</html>

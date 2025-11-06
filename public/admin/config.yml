@@ -1,0 +1,35 @@
+backend:
+  name: github
+  repo: YourGithubName/YourRepositoryName
+  branch: main
+  # Update to the exact origin that serves the CMS (e.g. production or preview domain).
+  base_url: "YourDomain"
+  auth_endpoint: "api/auth"
+
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "blog"
+    label: "Blog"
+    folder: "src/content/blog"
+    extension: "md"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Publish Date", name: "publishDate", widget: "datetime" }
+      - { label: "Updated Date", name: "updatedDate", widget: "datetime", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Draft", name: "draft", widget: "boolean", default: true }
+      - { label: "Cover Image", name: "coverImage", widget: "image", required: false, hint: "Displayed on the blog index." }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+      - { label: "Slug", name: "slug", widget: "string", required: false, hint: "Leave blank to use the filename." }
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+        editor_components:
+          - image

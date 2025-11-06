@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Tag from '../../components/Tag.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import { formatDate } from '../../utils/formatDate';
+import { getPostPermalink, getPostSlug, isDraft } from '../../utils/posts';
+import type { BlogEntry } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('blog')) as BlogEntry[];
+
+  return entries
+    .filter((entry) => !isDraft(entry))
+    .map((entry) => ({
+      params: { slug: getPostSlug(entry) },
+      props: { post: entry },
+    }));
+}
+
+const { post } = Astro.props as { post: BlogEntry };
+
+const { Content } = await post.render();
+const tags: string[] = post.data.tags ?? [];
+const heroImage = post.data.heroImage;
+const updatedDate = post.data.updatedDate;
+const canonicalPath = getPostPermalink(post);
+const openGraphImage = heroImage ?? post.data.coverImage;
+---
+
+<Layout
+  title={`${post.data.title} | My Blog`}
+  description={post.data.description}
+  ogType="article"
+  canonical={canonicalPath}
+  ogImage={openGraphImage}
+>
+  <article class="post-detail">
+    <p>
+      <time datetime={post.data.publishDate.toISOString()}>{formatDate(post.data.publishDate)}</time>
+      {updatedDate ? ` (updated ${formatDate(updatedDate)})` : null}
+    </p>
+    <h1>{post.data.title}</h1>
+    {tags.length ? (
+      <p>
+        Tags:{' '}
+        {tags.map((tag, index) => (
+          <span>
+            {index ? ', ' : ''}
+            <Tag tag={tag} />
+          </span>
+        ))}
+      </p>
+    ) : null}
+    {heroImage ? (
+      <figure class="post-hero">
+        <SmartImage
+          src={heroImage}
+          alt={post.data.title}
+          widths={[768, 1024, 1280, 1600]}
+          sizes="(min-width: 1200px) 900px, (min-width: 768px) 720px, 100vw"
+          class="post-hero__img"
+        />
+      </figure>
+    ) : null}
+    <div class="post-content">
+      <Content />
+    </div>
+  </article>
+</Layout>

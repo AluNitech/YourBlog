@@ -1,0 +1,12 @@
+---
+interface Props {
+  tag: string;
+  href?: string;
+}
+
+const { tag, href } = Astro.props as Props;
+const target = href ?? `/tags/${tag.toLowerCase()}`;
+
+---
+
+<a href={target}>#{tag}</a>
